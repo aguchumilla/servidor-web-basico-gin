@@ -14,32 +14,17 @@ type Usuario struct {
 var usuarios []Usuario
 
 func SetupRoutes(r *gin.Engine) {
+
+	r.LoadHTMLGlob("templates/*")
+
 	r.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hola mundo!!") //200
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"Title":   "Mi app",
+			"Heading": "Hola mundo!",
+			"Message": "Bienvenido a mi aplicacion web con Gin y plantillas HTML.",
+		})
 	})
 
-	r.GET("/saludo/:nombre", func(c *gin.Context) {
-		nombre := c.Param("nombre")
-		c.String(http.StatusOK, "Hola %s!", nombre)
+	r.Static("/static", "./static")
 
-	})
-
-	r.POST("/usuarios", func(c *gin.Context) {
-		var nuevoUsuario Usuario
-
-		if err := c.BindJSON(&nuevoUsuario); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "error al decodificar el json"})
-			return
-		}
-
-		if nuevoUsuario.Nombre == "" || nuevoUsuario.Email == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "El nombre y email no pueden ser vacios"})
-			return
-		}
-
-		usuarios = append(usuarios, nuevoUsuario)
-
-		c.JSON(http.StatusOK, gin.H{"Mensaje": "Usuario registrado ", "datos": usuarios})
-
-	})
 }
